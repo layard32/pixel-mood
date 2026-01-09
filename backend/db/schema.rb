@@ -14,9 +14,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_144059) do
   create_table "entries", force: :cascade do |t|
     t.text "content"
     t.integer "mood_score"
-    t.datetime "entry_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["entry_date"], name: "index_entries_on_entry_date", unique: true
   end
 end

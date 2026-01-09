@@ -1,4 +1,4 @@
-class EntryController < ApplicationController
+class EntriesController < ApplicationController
     # GET /entries
     def index
         @entries = Entry.all
