@@ -7,5 +7,6 @@ export const useEntries = () => {
         queryKey: ['entries'],
         queryFn: fetchEntries,
         staleTime: 1000 * 60 * 5,
+        enabled: false,
     });
 };

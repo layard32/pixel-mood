@@ -1,42 +1,47 @@
 import "@mantine/core/styles.css";
-import { MantineProvider, AppShell, Burger } from "@mantine/core";
+import { MantineProvider, AppShell, Burger, Group } from "@mantine/core";
 import { theme } from "./theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useDisclosure } from "@mantine/hooks";
+import { Calendar } from "./components/calendar";
 
 const queryClient = new QueryClient();
 
-export default function App() {
+function AppContent() {
   const [opened, { toggle }] = useDisclosure();
 
   return (
-    <MantineProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <AppShell
-          padding="md"
-          header={{ height: 60 }}
-          navbar={{
-            width: 300,
-            breakpoint: "sm",
-            collapsed: { mobile: !opened },
-          }}
-        >
-          <AppShell.Header>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
+    <AppShell
+      padding="md"
+      header={{ height: 60 }}
+      navbar={{
+        width: 200,
+        breakpoint: "md",
+        collapsed: { mobile: !opened },
+      }}
+    >
+      <AppShell.Header>
+        <Group h="100%">
+          <Burger opened={opened} onClick={toggle} hiddenFrom="md" size="sm" />
+          <div>Logo</div>
+        </Group>
+      </AppShell.Header>
 
-            <div>Logo</div>
-          </AppShell.Header>
+      <AppShell.Navbar>Navbar</AppShell.Navbar>
 
-          <AppShell.Navbar>Navbar</AppShell.Navbar>
+      <AppShell.Main>
+        <Calendar />
+      </AppShell.Main>
+    </AppShell>
+  );
+}
 
-          <AppShell.Main>Main</AppShell.Main>
-        </AppShell>
-      </QueryClientProvider>
-    </MantineProvider>
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MantineProvider theme={theme}>
+        <AppContent />
+      </MantineProvider>
+    </QueryClientProvider>
   );
 }
