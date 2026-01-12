@@ -1,9 +1,14 @@
 import { Box, Stack, Text } from "@mantine/core";
 import { getAllDaysOfYearByMonth } from "../utils/dateUtils";
+import { useEntries } from "../hooks/useEntries";
+import { getMoodColor } from "../utils/moodColor";
 
 export function Calendar() {
   // usiamo l'util per ottenere una mappa contenente tutti i giorni dell'anno raggruppati per mese
   const daysByMonth = getAllDaysOfYearByMonth();
+
+  // prendiamo la mappa contenente le entries dal custom hook
+  const { data: entriesMap } = useEntries();
 
   return (
     // usiamo Stack per disporre i mesi in colonna
@@ -45,7 +50,11 @@ export function Calendar() {
                   key={day}
                   w={40}
                   h={40}
-                  bg="gray.2"
+                  bg={
+                    entriesMap?.has(day)
+                      ? getMoodColor(entriesMap.get(day)!.mood_score)
+                      : "gray.2"
+                  }
                   style={{
                     borderRadius: "10px",
                     cursor: "pointer",
