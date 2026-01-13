@@ -21,6 +21,8 @@ import { theme } from "./theme";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useDisclosure } from "@mantine/hooks";
 import { Calendar } from "./components/calendar";
+import { Notifications } from "@mantine/notifications";
+import "@mantine/notifications/styles.css";
 
 const queryClient = new QueryClient();
 
@@ -103,6 +105,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme}>
+        <Notifications />
         <AppContent />
       </MantineProvider>
     </QueryClientProvider>
