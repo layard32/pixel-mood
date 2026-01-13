@@ -2,9 +2,10 @@ import { Box, Button, Stack, Text } from "@mantine/core";
 import { getAllDaysOfYearByMonth } from "../utils/dateUtils";
 import { useEntries } from "../hooks/useGetEntries";
 import { getMoodColor } from "../utils/moodColor";
-import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { EntryModal } from "./entryModal";
+import { IconArrowBigUpLine } from "@tabler/icons-react";
+import dayjs from "dayjs";
 
 export function Calendar() {
   // usiamo l'util per ottenere una mappa contenente tutti i giorni dell'anno raggruppati per mese
@@ -17,6 +18,15 @@ export function Calendar() {
   const [opened, { open, close }] = useDisclosure(false);
   const handleModalOpen = () => {
     open();
+  };
+
+  // per modificare la grandezza del pulsante
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // per rendere il giorno attuale del calendario cliccabile (al contrario di tutti gli altri)
+  const isCurrentDay = (day: string) => {
+    const today = dayjs().format("YYYY-MM-DD");
+    return day === today;
   };
 
   return (
@@ -71,8 +81,8 @@ export function Calendar() {
                           : "gray.2"
                       }
                       style={{
-                        borderRadius: "10px",
-                        cursor: "pointer",
+                        borderRadius: "15px",
+                        cursor: isCurrentDay(day) ? "pointer" : "default",
                       }}
                       title={day}
                     />
@@ -84,8 +94,19 @@ export function Calendar() {
         </Stack>
       </Box>
 
-      <Button onClick={handleModalOpen}> Log today </Button>
-      <EntryModal opened={opened} onClose={close} />
+      <Box mt="lg" style={{ display: "flex", justifyContent: "center" }}>
+        <Button
+          variant="light"
+          size={isMobile ? "sm" : "md"}
+          radius="md"
+          onClick={handleModalOpen}
+          rightSection={<IconArrowBigUpLine size={isMobile ? 15 : 20} />}
+        >
+          {" "}
+          Log today{" "}
+        </Button>
+        <EntryModal opened={opened} onClose={close} />
+      </Box>
     </>
   );
 }
