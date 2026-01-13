@@ -1,6 +1,6 @@
 import { Box, Stack, Text } from "@mantine/core";
 import { getAllDaysOfYearByMonth } from "../utils/dateUtils";
-import { useEntries } from "../hooks/useEntries";
+import { useEntries } from "../hooks/useGetEntries";
 import { getMoodColor } from "../utils/moodColor";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
