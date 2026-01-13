@@ -1,5 +1,5 @@
 import { Modal } from "@mantine/core";
-import { Button, NumberInput, Group, TextInput } from "@mantine/core";
+import { Button, NumberInput, Group, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect } from "react";
 import { useCreateEntry } from "../hooks/useCreateEntries";
@@ -56,14 +56,20 @@ export function EntryModal({ opened, onClose }: EntryModalProps) {
       onClose={onClose}
       title={dayjs().format("MMMM D, YYYY")}
       centered
+      radius="lg"
+      size="md"
     >
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-        <TextInput
+        <Textarea
           withAsterisk
           label="Content"
           placeholder="Write about your day"
           key={form.key("content")}
           {...form.getInputProps("content")}
+          mb="md"
+          autosize
+          minRows={4}
+          maxRows={10}
         />
 
         <NumberInput
@@ -75,9 +81,9 @@ export function EntryModal({ opened, onClose }: EntryModalProps) {
           {...form.getInputProps("mood_score")}
         />
 
-        <Group justify="flex-end" mt="md">
-          <Button loading={isPending} type="submit">
-            Submit
+        <Group justify="flex-end" mt="xl">
+          <Button loading={isPending} type="submit" variant="light">
+            Log
           </Button>
         </Group>
       </form>

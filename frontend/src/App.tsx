@@ -59,6 +59,11 @@ function AppContent() {
                 hiddenFrom="md"
                 size="sm"
               />
+              <img
+                src="/icon.jpg"
+                alt="Pixel-Mood Icon"
+                style={{ height: 40, borderRadius: "8px" }}
+              />
               <Text size="lg">Pixel-Mood</Text>
             </Group>
             <ActionIcon
@@ -78,7 +83,10 @@ function AppContent() {
       </AppShell.Header>
 
       <AppShell.Navbar p="md">
-        <Stack gap="xs">
+        <Stack
+          gap="xs"
+          pt={{ base: "10px", sm: "20px", md: "40px", lg: "60px", xl: "80px" }}
+        >
           <NavLink
             label={<Text size="lg">Home</Text>}
             leftSection={<IconHome size={16} />}

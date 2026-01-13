@@ -1,10 +1,10 @@
-import { Box, Button, Stack, Text } from "@mantine/core";
+import { Box, Button, Group, Stack, Text } from "@mantine/core";
 import { getAllDaysOfYearByMonth } from "../utils/dateUtils";
 import { useEntries } from "../hooks/useGetEntries";
 import { getMoodColor } from "../utils/moodColor";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { EntryModal } from "./entryModal";
-import { IconArrowBigUpLine } from "@tabler/icons-react";
+import { IconArrowBigUpLine, IconEdit, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 
 export function Calendar() {
@@ -21,7 +21,7 @@ export function Calendar() {
   };
 
   // per modificare la grandezza del pulsante
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useMediaQuery("(max-width: 800px)");
 
   // per rendere il giorno attuale del calendario cliccabile (al contrario di tutti gli altri)
   const isCurrentDay = (day: string) => {
@@ -33,10 +33,10 @@ export function Calendar() {
     // usiamo Stack per disporre i mesi in colonna
     <>
       <Box
+        pt={{ base: "10px", sm: "20px", md: "40px", lg: "60px", xl: "80px" }}
         style={{
           display: "flex",
           justifyContent: "center",
-          paddingTop: "15px",
         }}
       >
         <Stack gap={10}>
@@ -48,7 +48,6 @@ export function Calendar() {
                 key={month}
                 style={{
                   display: "flex",
-                  gap: "16px",
                   alignItems: "flex-start",
                 }}
               >
@@ -61,13 +60,12 @@ export function Calendar() {
                   {month}
                 </Text>
 
-                {/* creiamo un primo Box figlio che conterrà i giorni del mese 
-          (a loro volte come Box) */}
+                {/* creiamo un Box figlio che conterrà i giorni del mese (a loro volte come Box) */}
                 <Box
                   style={{
                     display: "flex",
                     flexWrap: "wrap",
-                    gap: "4px",
+                    gap: "10px",
                   }}
                 >
                   {days.map((day: string) => (
@@ -91,22 +89,46 @@ export function Calendar() {
               </Box>
             )
           )}
+          <Group
+            mt={{
+              base: "8px",
+              sm: "10px",
+              md: "15px",
+              lg: "20px",
+            }}
+            justify="center"
+          >
+            <Button
+              variant="subtle"
+              size={isMobile ? "sm" : "md"}
+              radius="md"
+              rightSection={<IconEdit size={isMobile ? 15 : 20} />}
+            >
+              Edit today entry
+            </Button>
+            <Button
+              variant="subtle"
+              size={isMobile ? "sm" : "md"}
+              radius="md"
+              onClick={handleModalOpen}
+              rightSection={<IconArrowBigUpLine size={isMobile ? 15 : 20} />}
+            >
+              Log today
+            </Button>
+            <Button
+              variant="subtle"
+              size={isMobile ? "sm" : "md"}
+              radius="md"
+              rightSection={<IconTrash size={isMobile ? 15 : 20} />}
+              color="red"
+            >
+              Delete today entry
+            </Button>
+          </Group>
         </Stack>
       </Box>
 
-      <Box mt="lg" style={{ display: "flex", justifyContent: "center" }}>
-        <Button
-          variant="light"
-          size={isMobile ? "sm" : "md"}
-          radius="md"
-          onClick={handleModalOpen}
-          rightSection={<IconArrowBigUpLine size={isMobile ? 15 : 20} />}
-        >
-          {" "}
-          Log today{" "}
-        </Button>
-        <EntryModal opened={opened} onClose={close} />
-      </Box>
+      <EntryModal opened={opened} onClose={close} />
     </>
   );
 }
