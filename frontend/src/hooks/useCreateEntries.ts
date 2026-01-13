@@ -6,7 +6,7 @@ export const useCreateEntry = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (newEntryData: { mood_score: number; note: string }) => createEntry(newEntryData),
+        mutationFn: (newEntryData: { mood_score: number; content: string }) => createEntry(newEntryData),
         onSuccess: () => {
             // invalido la query per forzare il refatch
             queryClient.invalidateQueries({ queryKey: ['entries'] });

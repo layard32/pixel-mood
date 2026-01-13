@@ -2,14 +2,25 @@ import { Modal } from "@mantine/core";
 import { Button, NumberInput, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect } from "react";
+import { useCreateEntry } from "../hooks/useCreateEntries";
+import dayjs from "dayjs";
 
 interface EntryModalProps {
   opened: boolean;
   onClose: () => void;
-  date: string;
 }
 
-export function EntryModal({ opened, onClose, date }: EntryModalProps) {
+export function EntryModal({ opened, onClose }: EntryModalProps) {
+  // utilizzo il custom hook per creare una nuova entry
+  const { mutate, isPending } = useCreateEntry();
+  const handleSubmit = (values: { mood_score: number; content: string }) => {
+    mutate({
+      mood_score: values.mood_score,
+      content: values.content,
+    });
+    onClose();
+  };
+
   // utilizzo il custom hook di mantine per definire il form
   const form = useForm({
     mode: "uncontrolled",
@@ -40,8 +51,13 @@ export function EntryModal({ opened, onClose, date }: EntryModalProps) {
   }, [opened]);
 
   return (
-    <Modal opened={opened} onClose={onClose} title={date} centered>
-      <form onSubmit={form.onSubmit(() => {})}>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={dayjs().format("MMMM D, YYYY")}
+      centered
+    >
+      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <TextInput
           withAsterisk
           label="Content"
@@ -60,7 +76,9 @@ export function EntryModal({ opened, onClose, date }: EntryModalProps) {
         />
 
         <Group justify="flex-end" mt="md">
-          <Button type="submit">Submit</Button>
+          <Button loading={isPending} type="submit">
+            Submit
+          </Button>
         </Group>
       </form>
     </Modal>

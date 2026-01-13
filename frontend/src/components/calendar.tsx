@@ -1,4 +1,4 @@
-import { Box, Stack, Text } from "@mantine/core";
+import { Box, Button, Stack, Text } from "@mantine/core";
 import { getAllDaysOfYearByMonth } from "../utils/dateUtils";
 import { useEntries } from "../hooks/useGetEntries";
 import { getMoodColor } from "../utils/moodColor";
@@ -15,9 +15,7 @@ export function Calendar() {
 
   // gestione del modale figlio
   const [opened, { open, close }] = useDisclosure(false);
-  const [selectedDay, setSelectedDay] = useState<string>("");
-  const handleEntryClick = (date: string) => {
-    setSelectedDay(date);
+  const handleModalOpen = () => {
     open();
   };
 
@@ -77,7 +75,6 @@ export function Calendar() {
                         cursor: "pointer",
                       }}
                       title={day}
-                      onClick={() => handleEntryClick(day)}
                     />
                   ))}
                 </Box>
@@ -87,7 +84,8 @@ export function Calendar() {
         </Stack>
       </Box>
 
-      <EntryModal opened={opened} onClose={close} date={selectedDay} />
+      <Button onClick={handleModalOpen}> Log today </Button>
+      <EntryModal opened={opened} onClose={close} />
     </>
   );
 }
