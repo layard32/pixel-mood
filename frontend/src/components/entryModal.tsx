@@ -1,6 +1,6 @@
 import { Modal } from "@mantine/core";
 import { Button, NumberInput, Group, Textarea } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { entryForm } from "../hooks/entryForm";
 import { useEffect } from "react";
 import { useCreateEntry } from "../hooks/useCreateEntries";
 import dayjs from "dayjs";
@@ -8,9 +8,10 @@ import dayjs from "dayjs";
 interface EntryModalProps {
   opened: boolean;
   onClose: () => void;
+  action: string;
 }
 
-export function EntryModal({ opened, onClose }: EntryModalProps) {
+export function EntryModal({ opened, onClose, action }: EntryModalProps) {
   // utilizzo il custom hook per creare una nuova entry
   const { mutate, isPending } = useCreateEntry();
   const handleSubmit = (values: { mood_score: number; content: string }) => {
@@ -22,26 +23,7 @@ export function EntryModal({ opened, onClose }: EntryModalProps) {
   };
 
   // utilizzo il custom hook di mantine per definire il form
-  const form = useForm({
-    mode: "uncontrolled",
-    initialValues: {
-      content: "",
-      mood_score: 0,
-    },
-    validate: {
-      content: (value) => {
-        if (!value) return "Content is required";
-        if (value.length > 200) return "Content must be 200 characters or less";
-        return null;
-      },
-      mood_score: (value) => {
-        if (!value) return "Mood score is required";
-        if (value < 1 || value > 10)
-          return "Mood score must be between 1 and 10";
-        return null;
-      },
-    },
-  });
+  const form = entryForm();
 
   // utilizzo useEffect per resettare il form quando il modale viene chiuso
   useEffect(() => {
@@ -82,9 +64,16 @@ export function EntryModal({ opened, onClose }: EntryModalProps) {
         />
 
         <Group justify="flex-end" mt="xl">
-          <Button loading={isPending} type="submit" variant="light">
-            Log
-          </Button>
+          {(action === "create" || action === "edit") && (
+            <Button loading={isPending} type="submit" variant="light">
+              Log
+            </Button>
+          )}
+          {action === "delete" && (
+            <Button color="red" variant="light">
+              Delete
+            </Button>
+          )}
         </Group>
       </form>
     </Modal>

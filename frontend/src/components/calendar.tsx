@@ -5,6 +5,7 @@ import { getMoodColor } from "../utils/moodColor";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { EntryModal } from "./entryModal";
 import { IconArrowBigUpLine, IconEdit, IconTrash } from "@tabler/icons-react";
+import { useState } from "react";
 import dayjs from "dayjs";
 
 export function Calendar() {
@@ -16,7 +17,9 @@ export function Calendar() {
 
   // gestione del modale figlio
   const [opened, { open, close }] = useDisclosure(false);
-  const handleModalOpen = () => {
+  const [modalAction, setModalAction] = useState<string>("");
+  const handleModalOpen = (action: string) => {
+    setModalAction(action);
     open();
   };
 
@@ -81,8 +84,18 @@ export function Calendar() {
                       style={{
                         borderRadius: "15px",
                         cursor: isCurrentDay(day) ? "pointer" : "default",
+                        borderColor: isCurrentDay(day)
+                          ? "#228be6"
+                          : "transparent",
+                        borderWidth: isCurrentDay(day) ? "3.5px" : "0px",
+                        borderStyle: "solid",
                       }}
                       title={day}
+                      onClick={() => {
+                        if (isCurrentDay(day)) {
+                          handleModalOpen("create");
+                        }
+                      }}
                     />
                   ))}
                 </Box>
@@ -103,6 +116,7 @@ export function Calendar() {
               size={isMobile ? "sm" : "md"}
               radius="md"
               rightSection={<IconEdit size={isMobile ? 15 : 20} />}
+              onClick={() => handleModalOpen("edit")}
             >
               Edit today entry
             </Button>
@@ -110,7 +124,7 @@ export function Calendar() {
               variant="subtle"
               size={isMobile ? "sm" : "md"}
               radius="md"
-              onClick={handleModalOpen}
+              onClick={() => handleModalOpen("create")}
               rightSection={<IconArrowBigUpLine size={isMobile ? 15 : 20} />}
             >
               Log today
@@ -121,6 +135,7 @@ export function Calendar() {
               radius="md"
               rightSection={<IconTrash size={isMobile ? 15 : 20} />}
               color="red"
+              onClick={() => handleModalOpen("delete")}
             >
               Delete today entry
             </Button>
@@ -128,7 +143,7 @@ export function Calendar() {
         </Stack>
       </Box>
 
-      <EntryModal opened={opened} onClose={close} />
+      <EntryModal opened={opened} onClose={close} action={modalAction} />
     </>
   );
 }
