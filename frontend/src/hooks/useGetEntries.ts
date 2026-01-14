@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllEntries } from "../api/getAllEntries";
 import { Entry } from "../types/entry";
 
-export const useEntries = () => {
+export const useGetEntries = () => {
     return useQuery({
         queryKey: ['entries'],
         queryFn: getAllEntries,

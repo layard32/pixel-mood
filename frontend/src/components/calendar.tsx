@@ -1,11 +1,12 @@
 import { Box, Button, Group, Stack, Text } from "@mantine/core";
 import { getAllDaysOfYearByMonth } from "../utils/dateUtils";
-import { useEntries } from "../hooks/useGetEntries";
+import { useGetEntries } from "../hooks/useGetEntries";
 import { getMoodColor } from "../utils/moodColor";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { EntryModal } from "./entryModal";
-import { IconArrowBigUpLine, IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconArrowBigUpLine } from "@tabler/icons-react";
 import { useState } from "react";
+import { Entry } from "../types/entry";
 import dayjs from "dayjs";
 
 export function Calendar() {
@@ -13,13 +14,17 @@ export function Calendar() {
   const daysByMonth: Record<string, string[]> = getAllDaysOfYearByMonth();
 
   // prendiamo la mappa contenente le entries dal custom hook
-  const { data: entriesMap } = useEntries();
+  const { data: entriesMap } = useGetEntries();
 
   // gestione del modale figlio
   const [opened, { open, close }] = useDisclosure(false);
-  const [modalAction, setModalAction] = useState<string>("");
-  const handleModalOpen = (action: string) => {
-    setModalAction(action);
+  const [selectedEntry, setSelectedEntry] = useState<Entry>();
+  // quando clicco su un giorno (se clicco sul pulsante, prende in automatico oggi)
+  const [selectedDay, setSelectedDay] = useState<string>("");
+  // quando clicco su un giorno o sul pulsante
+  const handleModalOpen = (day: string) => {
+    setSelectedEntry(entriesMap?.get(day)!);
+    setSelectedDay(day);
     open();
   };
 
@@ -43,7 +48,7 @@ export function Calendar() {
         }}
       >
         <Stack gap={10}>
-          {/* iteriamo sulle chiavi della mappa, cioè sui mesi */}
+          {/* iteriamo sui mesi dell'anno */}
           {Object.entries(daysByMonth).map(
             ([month, days]: [string, string[]]) => (
               // per ogni mese creiamo un Box parente (con Box)
@@ -83,7 +88,7 @@ export function Calendar() {
                       }
                       style={{
                         borderRadius: "15px",
-                        cursor: isCurrentDay(day) ? "pointer" : "default",
+                        cursor: "pointer",
                         borderColor: isCurrentDay(day)
                           ? "#228be6"
                           : "transparent",
@@ -92,9 +97,7 @@ export function Calendar() {
                       }}
                       title={day}
                       onClick={() => {
-                        if (isCurrentDay(day)) {
-                          handleModalOpen("create");
-                        }
+                        handleModalOpen(day);
                       }}
                     />
                   ))}
@@ -115,35 +118,23 @@ export function Calendar() {
               variant="subtle"
               size={isMobile ? "sm" : "md"}
               radius="md"
-              rightSection={<IconEdit size={isMobile ? 15 : 20} />}
-              onClick={() => handleModalOpen("edit")}
-            >
-              Edit today entry
-            </Button>
-            <Button
-              variant="subtle"
-              size={isMobile ? "sm" : "md"}
-              radius="md"
-              onClick={() => handleModalOpen("create")}
+              onClick={() => {
+                handleModalOpen(dayjs().format("YYYY-MM-DD"));
+              }}
               rightSection={<IconArrowBigUpLine size={isMobile ? 15 : 20} />}
             >
-              Log today
-            </Button>
-            <Button
-              variant="subtle"
-              size={isMobile ? "sm" : "md"}
-              radius="md"
-              rightSection={<IconTrash size={isMobile ? 15 : 20} />}
-              color="red"
-              onClick={() => handleModalOpen("delete")}
-            >
-              Delete today entry
+              Log or edit today
             </Button>
           </Group>
         </Stack>
       </Box>
 
-      <EntryModal opened={opened} onClose={close} action={modalAction} />
+      <EntryModal
+        opened={opened}
+        onClose={close}
+        selectedDay={selectedDay}
+        selectedEntry={selectedEntry}
+      />
     </>
   );
 }
