@@ -1,35 +1,63 @@
 import { Modal } from "@mantine/core";
 import { Button, NumberInput, Group, Textarea } from "@mantine/core";
 import { entryForm } from "../hooks/entryForm";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCreateEntry } from "../hooks/useCreateEntry";
+import { useUpdateEntry } from "../hooks/useUpdateEntry";
+import { useDeleteEntry } from "../hooks/useDeleteEntry";
 import { Entry } from "../types/entry";
 import dayjs from "dayjs";
 
 interface EntryModalProps {
   opened: boolean;
   onClose: () => void;
-  selectedDay: string;
   selectedEntry?: Entry;
 }
 
 export function EntryModal({
   opened,
   onClose,
-  selectedDay,
   selectedEntry,
 }: EntryModalProps) {
-  // utilizzo il custom hook per creare una nuova entry
-  const { mutate, isPending } = useCreateEntry();
+  // prendo i custom hooks per creazione, modifica e cancellazione delle entry
+  // ed uno stato per tenere traccia del tipo di operazione quando il form viene sottomesso
+  const [submitAction, setSubmitAction] = useState<
+    "create" | "edit" | "delete"
+  >("create");
+
+  const { mutate: createEntry, isPending: isCreating } = useCreateEntry();
+  const { mutate: updateEntry, isPending: isUpdating } = useUpdateEntry();
+  const { mutate: deleteEntry, isPending: isDeleting } = useDeleteEntry();
+
   const handleSubmit = (values: { mood_score: number; content: string }) => {
-    mutate({
-      mood_score: values.mood_score,
-      content: values.content,
-    });
-    onClose();
+    // per la modifica e il delete, controllo prima esista un'entry
+    if (selectedEntry) {
+      if (submitAction === "edit") {
+        updateEntry({
+          entryId: selectedEntry.id,
+          updatedEntryData: {
+            mood_score: values.mood_score,
+            content: values.content,
+          },
+        });
+        onClose();
+        return;
+      } else if (submitAction === "delete") {
+        deleteEntry(selectedEntry.id);
+        onClose();
+        return;
+      }
+    } else if (submitAction === "create") {
+      // per la creazione non serve controllare l'esistenza dell'entry
+      createEntry({
+        mood_score: values.mood_score,
+        content: values.content,
+      });
+      onClose();
+    }
   };
 
-  // utilizzo il custom hook di mantine per definire il form
+  // utilizzo il custom hook per definire la validazione sul form
   const form = entryForm();
 
   // utilizzo useEffect per resettare il form quando il modale viene chiuso e per popolarlo quando viene aperto con una selectedEntry
@@ -43,24 +71,37 @@ export function EntryModal({
     }
   }, [opened, selectedEntry]);
 
-  // la funzione restituisce true se il giorno selezionato è diverso da oggi
-  const isDayNotToday = (): boolean => {
-    return (
-      dayjs(selectedDay).format("YYYY-MM-DD") !== dayjs().format("YYYY-MM-DD")
-    );
-  };
-  // la funzione restituisce true se selectedEntry è definita e corrisponde al giorno attuale
-  const isSelectedEntryToday = (): boolean => {
-    return (
-      selectedEntry?.created_at.split("T")[0] === dayjs().format("YYYY-MM-DD")
-    );
-  };
+  // data della entry selezionata (o stringa vuota se non c'è un'entry relativa al giorno selezionato)
+  const selectedDate: string = selectedEntry
+    ? dayjs(selectedEntry.created_at).format("YYYY-MM-DD")
+    : "";
+  const todayDate: string = dayjs().format("YYYY-MM-DD");
+
+  // true se la data selezionata ha una entry
+  const isEntryExisting: boolean = selectedEntry !== undefined;
+
+  // true se la data selezionata non ha una entry ed è oggi
+  const isNotEntryExistingAndIsToday: boolean =
+    !isEntryExisting && selectedDate === todayDate;
+
+  // true se la data selezionata non ha un'entry ed è diversa da oggi
+  const isNotEntryExistingAndIsNotToday: boolean =
+    !isEntryExisting && selectedDate !== todayDate;
 
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      title={isDayNotToday() ? "See entry" : "Log your mood"}
+      // il titolo è "Log your mood" se la data selezionata non ha un'entry ed è oggi
+      // il titolo è "View your mood entry" se la data selezionata non ha un'entry e non è oggi
+      // il titolo è "Edit your mood entry" se la data selezionata ha un'entry
+      title={
+        isNotEntryExistingAndIsToday
+          ? "Log your mood"
+          : isNotEntryExistingAndIsNotToday
+          ? "View your mood entry"
+          : "Edit your mood entry"
+      }
       centered
       radius="lg"
       size="md"
@@ -76,7 +117,8 @@ export function EntryModal({
           autosize
           minRows={4}
           maxRows={10}
-          disabled={isDayNotToday()}
+          // i form sono disabilitati se la data selezionata non ha un'entry
+          disabled={!isEntryExisting}
         />
 
         <NumberInput
@@ -86,18 +128,43 @@ export function EntryModal({
           placeholder="From 1 to 10"
           key={form.key("mood_score")}
           {...form.getInputProps("mood_score")}
-          disabled={isDayNotToday()}
+          // i form sono disabilitati se la data selezionata non ha un'entry
+          disabled={!isEntryExisting}
         />
 
         <Group justify="flex-end" mt="xl">
-          {!isDayNotToday() && (
-            <Button loading={isPending} type="submit" variant="light">
-              Log
-            </Button>
+          {isEntryExisting && (
+            // se esiste un'entry per la data selezionata, mostra il pulsante "Edit" e "Delete"
+            <>
+              <Button
+                loading={isUpdating}
+                variant="light"
+                type="submit"
+                onClick={() => setSubmitAction("edit")}
+              >
+                Edit
+              </Button>
+              <Button
+                loading={isDeleting}
+                color="red"
+                variant="light"
+                type="submit"
+                onClick={() => setSubmitAction("delete")}
+              >
+                Delete
+              </Button>
+            </>
           )}
-          {isSelectedEntryToday() && (
-            <Button color="red" variant="light">
-              Delete
+
+          {isNotEntryExistingAndIsToday && (
+            // se non esiste un'entry per la data selezionata ed è oggi, mostra il pulsante "Log"
+            <Button
+              loading={isCreating}
+              variant="light"
+              type="submit"
+              onClick={() => setSubmitAction("create")}
+            >
+              Log
             </Button>
           )}
         </Group>

@@ -15,7 +15,6 @@ export const useGetEntries = () => {
                 const date = entry.created_at.split('T')[0];
                 entriesMap.set(date, entry);
             });
-            console.log("Entries Map:", entriesMap);
             return entriesMap;
         },
     });
