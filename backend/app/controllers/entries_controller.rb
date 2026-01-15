@@ -25,6 +25,12 @@ class EntriesController < ApplicationController
         end
     end
 
+    # DELETE /entries/:id
+    def destroy
+        @entry = Entry.find(params[:id])
+        @entry.destroy
+        head :no_content
+    end
 
     private
 
