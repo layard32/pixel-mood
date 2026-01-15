@@ -32,20 +32,16 @@ export function EntryModal({
   // utilizzo il custom hook di mantine per definire il form
   const form = entryForm();
 
-  // utilizzo useEffect per resettare il form quando il modale viene chiuso
-  useEffect(() => {
-    if (!opened) {
-      form.reset();
-    }
-  }, [opened]);
-
-  // popolo il form con i dati di selectedEntry, se esiste
+  // utilizzo useEffect per resettare il form quando il modale viene chiuso e per popolarlo quando viene aperto con una selectedEntry
   useEffect(() => {
     if (selectedEntry) {
       form.setFieldValue("content", selectedEntry.content);
       form.setFieldValue("mood_score", selectedEntry.mood_score);
     }
-  }, [selectedEntry]);
+    if (!opened) {
+      form.reset();
+    }
+  }, [opened, selectedEntry]);
 
   // la funzione restituisce true se il giorno selezionato è diverso da oggi
   const isDayNotToday = (): boolean => {
