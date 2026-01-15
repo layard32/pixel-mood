@@ -1,6 +1,6 @@
 // custom hook per prendere tutte le entries dal server usando transtack/react-query
 import { useQuery } from "@tanstack/react-query";
-import { getAllEntries } from "../api/getAllEntries";
+import { getAllEntries } from "../api/entries";
 import { Entry } from "../types/entry";
 
 export const useGetEntries = () => {

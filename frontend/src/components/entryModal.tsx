@@ -60,7 +60,7 @@ export function EntryModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title={isDayNotToday() ? "See entries" : "Log your mood"}
+      title={isDayNotToday() ? "See entry" : "Log your mood"}
       centered
       radius="lg"
       size="md"

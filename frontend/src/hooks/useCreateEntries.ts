@@ -1,13 +1,13 @@
 // custom hook per creare una nuova entry usando le mutazioni di @tanstack/react-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createEntry } from "../api/createNewEntry";
+import { createNewEntry } from "../api/entries";
 import { notifications } from '@mantine/notifications';
 
 export const useCreateEntry = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (newEntryData: { mood_score: number; content: string }) => createEntry(newEntryData),
+        mutationFn: (newEntryData: { mood_score: number; content: string }) => createNewEntry(newEntryData),
         onSuccess: () => {
             // invalido la query per forzare il refatch
             queryClient.invalidateQueries({ queryKey: ['entries'] });
