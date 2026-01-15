@@ -5,7 +5,7 @@ export const showSuccessNotification = (message: string) => {
         title: 'Success',
         message,
         color: 'green',
-        autoClose: 5000,
+        autoClose: 3000,
         position: 'top-right'
     });
 }
@@ -15,7 +15,7 @@ export const showErrorNotification = (message: string) => {
         title: 'Error',
         message,
         color: 'red',
-        autoClose: 5000,
+        autoClose: 3000,
         position: 'top-right'
     });
 }

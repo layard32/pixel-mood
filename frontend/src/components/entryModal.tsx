@@ -11,12 +11,14 @@ import dayjs from "dayjs";
 interface EntryModalProps {
   opened: boolean;
   onClose: () => void;
+  selectedDate: string;
   selectedEntry?: Entry;
 }
 
 export function EntryModal({
   opened,
   onClose,
+  selectedDate,
   selectedEntry,
 }: EntryModalProps) {
   // prendo i custom hooks per creazione, modifica e cancellazione delle entry
@@ -71,16 +73,11 @@ export function EntryModal({
     }
   }, [opened, selectedEntry]);
 
-  // data della entry selezionata (o stringa vuota se non c'è un'entry relativa al giorno selezionato)
-  const selectedDate: string = selectedEntry
-    ? dayjs(selectedEntry.created_at).format("YYYY-MM-DD")
-    : "";
-  const todayDate: string = dayjs().format("YYYY-MM-DD");
-
   // true se la data selezionata ha una entry
   const isEntryExisting: boolean = selectedEntry !== undefined;
 
   // true se la data selezionata non ha una entry ed è oggi
+  const todayDate: string = dayjs().format("YYYY-MM-DD");
   const isNotEntryExistingAndIsToday: boolean =
     !isEntryExisting && selectedDate === todayDate;
 
@@ -92,44 +89,35 @@ export function EntryModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      // il titolo è "Log your mood" se la data selezionata non ha un'entry ed è oggi
-      // il titolo è "View your mood entry" se la data selezionata non ha un'entry e non è oggi
-      // il titolo è "Edit your mood entry" se la data selezionata ha un'entry
-      title={
-        isNotEntryExistingAndIsToday
-          ? "Log your mood"
-          : isNotEntryExistingAndIsNotToday
-          ? "View your mood entry"
-          : "Edit your mood entry"
-      }
+      title={dayjs(selectedDate).format("MMMM D, YYYY")}
       centered
       radius="lg"
       size="md"
     >
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Textarea
-          required
+          withAsterisk
           label="Content"
-          placeholder="Write about your day"
+          description="Write about your day"
           key={form.key("content")}
           {...form.getInputProps("content")}
           mb="md"
           autosize
           minRows={4}
           maxRows={10}
-          // i form sono disabilitati se la data selezionata non ha un'entry
-          disabled={!isEntryExisting}
+          // i form sono disabilitati se la data selezionata non ha un'entry e non è oggi
+          disabled={isNotEntryExistingAndIsNotToday}
         />
 
         <NumberInput
           required
           radius="md"
           label="Mood score"
-          placeholder="From 1 to 10"
+          description="Rate your mood from 1 (very bad) to 10 (excellent)"
           key={form.key("mood_score")}
           {...form.getInputProps("mood_score")}
-          // i form sono disabilitati se la data selezionata non ha un'entry
-          disabled={!isEntryExisting}
+          // i form sono disabilitati se la data selezionata non ha un'entry e non è oggi
+          disabled={isNotEntryExistingAndIsNotToday}
         />
 
         <Group justify="flex-end" mt="xl">

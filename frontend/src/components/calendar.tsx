@@ -19,9 +19,11 @@ export function Calendar() {
   // gestione del modale figlio
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedEntry, setSelectedEntry] = useState<Entry>();
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
   // quando clicco su un giorno o sul pulsante
   const handleModalOpen = (day: string) => {
+    setSelectedDate(day);
     setSelectedEntry(entriesMap?.get(day)!);
     open();
   };
@@ -130,6 +132,7 @@ export function Calendar() {
       <EntryModal
         opened={opened}
         onClose={close}
+        selectedDate={selectedDate}
         selectedEntry={selectedEntry}
       />
     </>

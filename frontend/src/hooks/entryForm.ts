@@ -10,7 +10,7 @@ export const entryForm = () => {
         validate: {
         content: (value) => {
             if (!value) return "Content is required";
-            if (value.length > 200) return "Content must be 200 characters or less";
+            if (value.length > 500) return "Content must be 500 characters or less";
             return null;
         },
         mood_score: (value) => {

@@ -61,5 +61,9 @@ export const deleteEntry = async(entryId: number) => {
     });
 
     handleApiError(response);
+    // 204 No Content non ha body, quindi non tentare di parsare JSON
+    if (response.status === 204) {
+        return null;
+    }
     return response.json();
 }

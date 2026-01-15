@@ -1,7 +1,7 @@
 class Entry < ApplicationRecord
     # validazioni base
     validates :content, presence: true
-    validates :mood_score, presence: true, inclusion: { in: 1..5 }
+    validates :mood_score, presence: true, inclusion: { in: 1..10 }
 
     # validazioni personalizzate
     validate :only_one_entry_per_day # per assicurare una sola entry al giorno
