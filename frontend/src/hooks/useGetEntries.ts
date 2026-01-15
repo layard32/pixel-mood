@@ -1,4 +1,4 @@
-// custom hook per prendere tutte le entries dal server usando transtack/react-query
+// custom hook che utilizza la chiamata api definita in ../api/entries e le query di @tanstack/react-query
 import { useQuery } from "@tanstack/react-query";
 import { getAllEntries } from "../api/entries";
 import { Entry } from "../types/entry";
@@ -15,6 +15,7 @@ export const useGetEntries = () => {
                 const date = entry.created_at.split('T')[0];
                 entriesMap.set(date, entry);
             });
+            console.log("Entries Map:", entriesMap);
             return entriesMap;
         },
     });

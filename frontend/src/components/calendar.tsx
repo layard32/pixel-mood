@@ -62,7 +62,7 @@ export function Calendar() {
                 <Text
                   fz={{ base: "sm", sm: "md", md: "lg" }}
                   fw={500}
-                  miw={{ base: "70px", sm: "95px", md: "110px" }}
+                  miw={{ base: "85px", sm: "95px", md: "110px" }}
                   style={{ flexShrink: 0 }}
                 >
                   {month}

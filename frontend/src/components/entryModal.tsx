@@ -2,7 +2,7 @@ import { Modal } from "@mantine/core";
 import { Button, NumberInput, Group, Textarea } from "@mantine/core";
 import { entryForm } from "../hooks/entryForm";
 import { useEffect } from "react";
-import { useCreateEntry } from "../hooks/useCreateEntries";
+import { useCreateEntry } from "../hooks/useCreateEntry";
 import { Entry } from "../types/entry";
 import dayjs from "dayjs";
 

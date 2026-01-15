@@ -1,18 +1,18 @@
+import { getApiUrl, handleApiError } from "../utils/apiUtils";
+
 // chiamata GET per prendere tutte le entries
 export const getAllEntries = async () => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    const url = `${baseUrl}/entries`;
+    const url = getApiUrl();
 
     const response = await fetch(url);
     
-    if (!response.ok) throw new Error('Network response was not ok');
+    handleApiError(response);
     return response.json();
 };
 
 // chiamata POST per creare una nuova entry
 export const createNewEntry = async (newEntryData: { mood_score: number; content: string }) => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    const url = `${baseUrl}/entries`;
+    const url = getApiUrl();
 
     const response = await fetch(url, {
         method: 'POST',
@@ -27,6 +27,39 @@ export const createNewEntry = async (newEntryData: { mood_score: number; content
         }),
     });
 
-    if (!response.ok) throw new Error('Network response was not ok');
+    handleApiError(response);
     return response.json();
 };
+
+// chiamata PATCH per aggiornare una entry esistente
+export const updateEntry = async(entryId: number, updatedEntryData: { mood_score: number; content: string }) => {
+    const url = `${getApiUrl()}/${entryId}`;
+
+    const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            entry: {
+                content: updatedEntryData.content,
+                mood_score: updatedEntryData.mood_score,
+            },
+        }),
+    });
+
+    handleApiError(response);
+    return response.json();
+}
+
+// chiamata DELETE per eliminare una entry
+export const deleteEntry = async(entryId: number) => {
+    const url =  `${getApiUrl()}/${entryId}`;
+
+    const response = await fetch(url, {
+        method: 'DELETE',
+    });
+
+    handleApiError(response);
+    return response.json();
+}

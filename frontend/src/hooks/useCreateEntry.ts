@@ -1,7 +1,7 @@
 // custom hook per creare una nuova entry usando le mutazioni di @tanstack/react-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNewEntry } from "../api/entries";
-import { notifications } from '@mantine/notifications';
+import { showSuccessNotification, showErrorNotification } from "../utils/notificationUtils";
 
 export const useCreateEntry = () => {
     const queryClient = useQueryClient();
@@ -11,13 +11,7 @@ export const useCreateEntry = () => {
         onSuccess: () => {
             // invalido la query per forzare il refatch
             queryClient.invalidateQueries({ queryKey: ['entries'] });
-            notifications.show({
-                title: 'Success',
-                message: 'Entry created successfully',
-                color: 'green',
-                autoClose: 5000,
-                position: 'top-right'
-            })
+            showSuccessNotification('Entry created successfully');
         },
         // mostra l'errore usando un toast di mantine
         onError: (error: any) => {
@@ -28,13 +22,7 @@ export const useCreateEntry = () => {
                     .join(' | ')
                 : error.message || 'Failed to create entry';
 
-            notifications.show({
-                title: 'Error',
-                message: errorMessage,
-                color: 'red',
-                autoClose: 5000,
-                position: 'top-right'
-            });
+            showErrorNotification(errorMessage);
         },
     });
 };
